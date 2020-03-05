@@ -71,7 +71,6 @@ public class Space extends World
         int y=getHeight()/2;
         int currentScore=scoreCounter.getValue();
         addObject(new ScoreBoard(currentScore),x,y);
-     
     }
     public void updateScore(int addToScore)
     {

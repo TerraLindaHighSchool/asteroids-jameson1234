@@ -3,9 +3,7 @@ import greenfoot.*;
 /**
  * A rocket that can be controlled by the arrowkeys: up, left, right.
  * The gun is fired by hitting the 'space' key. 'z' releases a proton wave.
- * 
- * @author Poul Henriksen
- * @author Michael Kölling
+ * @author Jameson Gilmore
  * 
  * @version 1.1
  */
@@ -14,6 +12,7 @@ public class Rocket extends SmoothMover
     private static final int gunReloadTime = 5;         // The minimum delay between firing the gun.
 
     private int reloadDelayCount;               // How long ago we fired the gun the last time.
+    private int waveCount;
     
     private GreenfootImage rocket = new GreenfootImage("rocket.png");    
     private GreenfootImage rocketWithThrust = new GreenfootImage("rocketWithThrust.png");
@@ -34,6 +33,7 @@ public class Rocket extends SmoothMover
     {
         checkKeys();
         reloadDelayCount++;
+        move();
         checkCollision();
     }
     
@@ -52,39 +52,28 @@ public class Rocket extends SmoothMover
         }
         if (Greenfoot.isKeyDown("right"))
         {
-            turn(5);
+            turn(-5);
         }
         if (Greenfoot.isKeyDown("up"))
         {
             move(2);
         }
-         ignite(Greenfoot.isKeyDown("up"));
+        ignite(Greenfoot.isKeyDown("up"));
     }
-    private void checkCollision()
-    {
-        if( getOneIntersectingObject(Asteroid.class) != null)
-         {
-             World world = getWorld();
-             Explosion explosion = new Explosion();
-             world.addObject(explosion, getX() , getY());
-             world.removeObject(this);
-             Greenfoot.stop();
-             
-            }
-    }        
-
+    
     public void ignite (boolean boosterOn)
     {
        if (boosterOn)
        {
-           setImage(rocketWithThrust);    
+           setImage("rocketWithThrust.png");
+           addToVelocity(new Vector(getRotation(), 0.3));
        }
        else
        {
-           setImage(rocket);    
+           setImage("rocket.png");    
        }
     }
-
+    
     /**
      * Fire a bullet if the gun is ready.
      */
@@ -95,8 +84,20 @@ public class Rocket extends SmoothMover
             Bullet bullet = new Bullet (getVelocity(), getRotation());
             getWorld().addObject (bullet, getX(), getY());
             bullet.move ();
-            reloadDelayCount = 0;
+            reloadDelayCount = 5;
         }
     }
+    
+    private void checkCollision()
+    {
+        if( getOneIntersectingObject(Asteroid.class) != null) 
+        {
+             Space space = (Space) getWorld();
+           space.addObject(new Explosion(),getX(),getY());
+           space.removeObject(this);
+           space.gameOver();
 
+        }
+    }
+    
 }
