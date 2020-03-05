@@ -34,6 +34,7 @@ public class Rocket extends SmoothMover
     {
         checkKeys();
         reloadDelayCount++;
+        checkCollision();
     }
     
     /**
@@ -45,8 +46,45 @@ public class Rocket extends SmoothMover
         {
             fire();
         }
+        if (Greenfoot.isKeyDown("left"))
+        {
+            turn(-5);
+        }
+        if (Greenfoot.isKeyDown("right"))
+        {
+            turn(5);
+        }
+        if (Greenfoot.isKeyDown("up"))
+        {
+            move(2);
+        }
+         ignite(Greenfoot.isKeyDown("up"));
     }
-    
+    private void checkCollision()
+    {
+        if( getOneIntersectingObject(Asteroid.class) != null)
+         {
+             World world = getWorld();
+             Explosion explosion = new Explosion();
+             world.addObject(explosion, getX() , getY());
+             world.removeObject(this);
+             Greenfoot.stop();
+             
+            }
+    }        
+
+    public void ignite (boolean boosterOn)
+    {
+       if (boosterOn)
+       {
+           setImage(rocketWithThrust);    
+       }
+       else
+       {
+           setImage(rocket);    
+       }
+    }
+
     /**
      * Fire a bullet if the gun is ready.
      */
@@ -60,5 +98,5 @@ public class Rocket extends SmoothMover
             reloadDelayCount = 0;
         }
     }
-    
+
 }
